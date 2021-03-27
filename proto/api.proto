@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package scout;
+option go_package = "github.com/rotationalio/scout/proto;api";
+
+
+// Scout models a reverse RPC where the client opens the stream with an empty Report
+// then listens for events from the server and responds to those events with reports.
+service Scout {
+    rpc Events(stream Report) returns (stream Event) {};
+}
+
+
+message Report {
+    uint64 msg_id = 1;      // Respond with the same msg_id as the event (0 to init)
+    bool success = 2;       // Was the event handled correctly or not?
+    string client = 3;      // Send client name for identification and logging
+}
+
+message Event {
+    uint64 msg_id = 1;     // Unique message id to correlate with reports
+    string event = 2;      // The data associated with the event
+    string timestamp = 3;  // The timestamp that the event was triggered on
+}
